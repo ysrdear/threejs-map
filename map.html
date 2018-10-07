@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地球</title>
+</head>
+<body>
+
+    <script type="text/javascript" src="src/three.js"></script>
+    <script type="text/javascript" src="src/OrbitControls.js"></script>
+    <script type="text/javascript" src="src/dat.gui.js"></script>
+    <script type="text/javascript">
+
+        var scene = new THREE.Scene()
+
+        var renderer = new THREE.WebGLRenderer()
+
+        renderer.setSize(800,800)
+
+        document.body.appendChild(renderer.domElement)
+
+        var camera = new THREE.PerspectiveCamera(50,1,0.1,2000)
+
+        camera.position.z = 1500
+
+        var helper = new THREE.AxisHelper(1000)
+
+        scene.add(helper)
+
+        var texture = new THREE.TextureLoader().load('asset/texture/earth_atmos_2048.jpg')
+
+
+        var geometry = new THREE.SphereGeometry(500,30,30)
+        var material = new THREE.MeshBasicMaterial({color: 0xcccccc , map : texture})
+
+        var mesh = new THREE.Mesh(geometry,material)
+
+        scene.add(mesh)
+
+        function lglt2xyz(longitude,latitude,radius){
+            var lg = THREE.Math.degToRad(longitude) , lt = THREE.Math.degToRad(latitude);
+            var y = radius * Math.sin(lt);
+            var temp = radius * Math.cos(lt);
+            var x = temp * Math.sin(lg);
+            var z = temp * Math.cos(lg);
+            console.log(x+","+y+","+z);
+
+            return {x:x , y:y ,z:z}
+        }
+
+        gui = new dat.GUI()
+        var controls = new function(){
+            this.cubePositionLng = 110
+            this.cubePositionLat = 19
+        }
+
+        gui.add(controls,'cubePositionLng', -180,180).name('cube的经度')
+        gui.add(controls,'cubePositionLat', -90,90).name('cube的纬度')
+
+
+        var pos = lglt2xyz(110,19,500)
+
+        var point = new THREE.SphereGeometry(20,5,5)
+        var material = new THREE.MeshBasicMaterial({color: 0xfff000})
+
+        var pointMesh = new THREE.Mesh(point,material)
+
+
+        pointMesh.position.set(pos.x , pos.y , pos.z)
+
+        scene.add(pointMesh)
+
+
+        var control = new THREE.OrbitControls(camera,renderer.domElement)
+        control.addEventListener( 'change', render );
+
+
+        function render() {
+
+            var pos = lglt2xyz(controls.cubePositionLng,controls.cubePositionLat,500)
+
+            pointMesh.position.set(pos.z , pos.y , -pos.x)
+
+            renderer.render( scene, camera );
+
+            requestAnimationFrame(render)
+
+        }
+
+        render()
+
+    </script>
+</body>
+</html>
