@@ -41,8 +41,8 @@
             var lg = THREE.Math.degToRad(longitude) , lt = THREE.Math.degToRad(latitude);
             var y = radius * Math.sin(lt);
             var temp = radius * Math.cos(lt);
-            var x = temp * Math.sin(lg);
-            var z = temp * Math.cos(lg);
+            var z = -temp * Math.sin(lg);
+            var x = temp * Math.cos(lg);
             console.log(x+","+y+","+z);
 
             return {x:x , y:y ,z:z}
@@ -79,7 +79,7 @@
 
             var pos = lglt2xyz(controls.cubePositionLng,controls.cubePositionLat,500)
 
-            pointMesh.position.set(pos.z , pos.y , -pos.x)
+            pointMesh.position.set(pos.x , pos.y , pos.z)
 
             renderer.render( scene, camera );
 
